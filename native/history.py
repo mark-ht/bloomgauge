@@ -18,7 +18,9 @@ class History:
             pathlib.Path(path).parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(str(path), check_same_thread=False, timeout=10)
         self.db.row_factory = sqlite3.Row
-        self.db.executescript("""PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;
+        # temp_store=MEMORY: a GROUP BY or ORDER BY over weeks of credits otherwise spills
+        # its sort to a temp file, tens of MB of disk writes per query.
+        self.db.executescript("""PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA temp_store=MEMORY;
         CREATE TABLE IF NOT EXISTS samples(at INTEGER PRIMARY KEY,tokens REAL,cpu REAL,gpu REAL,memory REAL,cpu_temp REAL,gpu_temp REAL);
         CREATE TABLE IF NOT EXISTS credits(account TEXT,id INTEGER,at REAL,model TEXT,micro_usd INTEGER,output_tokens INTEGER,PRIMARY KEY(account,id));
         CREATE INDEX IF NOT EXISTS credit_time ON credits(account,at DESC,id DESC);

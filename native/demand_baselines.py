@@ -36,6 +36,7 @@ def read_view(store):
     try:
         db.row_factory = sqlite3.Row
         db.execute('PRAGMA query_only=ON')
+        db.execute('PRAGMA temp_store=MEMORY')  # as History: large sorts stay off the disk
         db.execute('BEGIN')
         view = copy.copy(store)
         view.h = SimpleNamespace(db=db, lock=threading.RLock())

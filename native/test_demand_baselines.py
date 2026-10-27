@@ -498,6 +498,7 @@ class ConcurrentHistoryTests(unittest.TestCase):
                     self.assertEqual(
                         view.h.db.execute('SELECT active FROM opt_network').fetchone()[0], 1
                     )
+                    self.assertEqual(view.h.db.execute('PRAGMA temp_store').fetchone()[0], 2)
                     result = []
 
                     def write():

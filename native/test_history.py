@@ -65,6 +65,12 @@ class HistoryTests(unittest.TestCase):
             self.assertEqual(b.chart(1, 500)['samples'][0]['tokensPerSecond'], 5)
             b.close()
 
+    def test_sorts_stay_in_memory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            h = History(pathlib.Path(folder) / 'db')
+            self.assertEqual(h.db.execute('PRAGMA temp_store').fetchone()[0], 2)
+            h.close()
+
     def test_network_rates(self):
         d = {
             'bucket_seconds': 60,
